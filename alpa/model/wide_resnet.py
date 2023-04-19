@@ -147,6 +147,14 @@ model_configs = {
         "stage_sizes": [3, 4, 6, 3],
         "block_cls": ResNetBlock
     },
+    4: {
+        "stage_sizes": [1, 1, 1, 1],
+        "block_cls": BottleneckResNetBlock
+    },
+    8: {
+        "stage_sizes": [2, 2, 2, 2],
+        "block_cls": BottleneckResNetBlock
+    },
     50: {
         "stage_sizes": [3, 4, 6, 3],
         "block_cls": BottleneckResNetBlock

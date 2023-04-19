@@ -404,8 +404,11 @@ class ProfileWorkerPool(BaseWorkerPoolWrapper):
     def __init__(self, virtual_meshes, placement_group):
         super().__init__()
         worker_cls = ray.remote(ProfileWorker)
+        env_vars = {
+            "XLA_PYTHON_CLIENT_MEM_FRACTION": str(global_config.xla_client_mem_fraction)}
+
         self.actors = [
-            worker_cls.options(placement_group=placement_group).remote(mesh)
+            worker_cls.options(placement_group=placement_group, runtime_env={"env_vars":env_vars}).remote(mesh)
             for mesh in virtual_meshes
         ]
         self.pool = ActorPool(self.actors)
@@ -932,6 +935,10 @@ def interpret_profile_result_training_2d(
         if index not in profile_results:
             continue
         profile_result = profile_results[index]
+
+        if None in profile_result.module_profile_results:
+            continue
+
         all_compute_cost[index] = sum(
             result.compute_cost
             for result in profile_result.module_profile_results)

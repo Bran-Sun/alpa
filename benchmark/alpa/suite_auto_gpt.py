@@ -3,7 +3,7 @@ from suite_manual_gpt import gpt_specs
 from benchmark_parallel_utils import (BenchmarkCase, SearchParallelArgs,
                                       LoadSolutionParallelArgs)
 
-max_global_batch_size = 1024
+max_global_batch_size = 512
 
 auto_stage_option = {
     "submesh_physical_shape_space": "small_power_of_two",
@@ -85,6 +85,19 @@ perf_test_suite = {
 
 # Grid search on hyperparameters
 grid_search_suite = {
+    8: get_search_cases(gpt_specs["1.3B"], [64], [16]),
+    16: get_search_cases(gpt_specs["2.6B"], [64], [16]),
+    32: get_search_cases(gpt_specs["6.7B"], [64], [16]),
+}
+
+intra_search_suite = {
+    2: get_search_cases(gpt_specs["6.7B_2"], [64], [16]),
+    4: get_search_cases(gpt_specs["6.7B_4"], [64], [16]),
+    8: get_search_cases(gpt_specs["6.7B_8"], [64], [16]),
+}
+
+"""
+grid_search_suite = {
     2: (get_search_cases(gpt_specs["760M"], [32, 64, 128, 256], [6]) +
         get_search_cases(gpt_specs["760M"], [32, 64], [12])),
     4: (get_search_cases(gpt_specs["1.3B"], [32, 64, 128], [6]) +
@@ -95,6 +108,7 @@ grid_search_suite = {
     32: get_search_cases(gpt_specs["15B"], [64, 128, 256, 512], [16]),
     64: get_search_cases(gpt_specs["39B"], [128, 256, 512, 1024], [8]),
 }
+"""
 
 # Small test cases for correctness test
 correctness_test_suite = {

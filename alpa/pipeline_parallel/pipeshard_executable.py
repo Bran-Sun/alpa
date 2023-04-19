@@ -522,7 +522,8 @@ class PipeshardMeshWorkerExecutable:
         timers(self.exec_timer_name).start(sync_func=sync_func)
 
         for instruction in self.instructions:
-            #self.worker.sync()
+            self.worker.sync()
+            begin = time.time()
             #print(f"memory_allocated: "
             #      f"{self.worker.get_memory_allocated()/1024**3:.3f} GB  "
             #      f"max_memory_allocated: "
@@ -556,6 +557,10 @@ class PipeshardMeshWorkerExecutable:
                      is not None else instruction.output_uuids)[0])
             elif instruction.opcode == PipelineInstType.FREE:
                 self.worker.delete_buffers(instruction.input_uuids)
+
+            self.worker.sync()
+            end = time.time()
+            print(f"next instruction: {instruction}, time: {(end - begin) * 1000} ms", flush=True)
 
         timers(self.exec_timer_name).stop(sync_func=sync_func)
 

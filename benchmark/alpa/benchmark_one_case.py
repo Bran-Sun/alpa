@@ -63,7 +63,7 @@ def benchmark_one_case_internal(model,
                 niter,
                 profile_driver_time=profile_driver_time)
         elif model == "wresnet":
-            global_config.xla_client_mem_fraction = 0.88
+            global_config.xla_client_mem_fraction = 0.82
             # Due to legacy issues, we turn off auto-tuning. Although the
             # performance will be much better if we turn it on
             global_config.xla_gpu_autotune_level = 0
@@ -98,7 +98,7 @@ def benchmark_one_case_internal(model,
                 num_devices_per_host,
                 profile_driver_time=profile_driver_time)
         elif model == "wresnet":
-            global_config.xla_client_mem_fraction = 0.88
+            global_config.xla_client_mem_fraction = 0.82
             # Due to legacy issues, we turn off auto-tuning. Although the
             # performance will be much better if we turn it on
             global_config.xla_gpu_autotune_level = 0

@@ -22,6 +22,9 @@ wresnet_specs = {
     "1B": WResNetModelConfig(224, 50, 320, 2, "fp32"),
     "2B": WResNetModelConfig(224, 50, 448, 2, "fp32"),
     "4B": WResNetModelConfig(224, 50, 640, 2, "fp32"),
+    "4B_2": WResNetModelConfig(224, 4, 320, 16, "fp32"),
+    "4B_4": WResNetModelConfig(224, 8, 320, 16, "fp32"),
+    "4B_8": WResNetModelConfig(224, 50, 320, 16, "fp32"),
     "6.8B": WResNetModelConfig(224, 50, 320, 16, "fp32"),
     "13B": WResNetModelConfig(224, 101, 320, 16, "fp32"),
 }
@@ -159,13 +162,18 @@ perf_test_auto_suite = {
 
 # Grid search on hyperparameters
 # key = the number of gpus, value = a list of cases
+intra_search_auto_suite = {
+    2: get_search_cases("4B_2", 1536, [24]),
+    4: get_search_cases("4B_4", 1536, [24]),
+    8: get_search_cases("4B_8", 1536, [24]),
+}
+
 grid_search_auto_suite = {
     1: get_search_cases("250M", 1536, [24, 32]),
     2: get_search_cases("500M", 1536, [24, 32]),
     4: get_search_cases("1B", 1536, [24, 32]),
-    8: get_search_cases("2B", 1536, [24, 32]),
-    16: get_search_cases("4B", 1536, [24, 32]),
-    32: (get_search_cases("6.8B", 1520, [38]) +
-         get_search_cases("6.8B", 1512, [42])),
+    8: get_search_cases("2B", 1536, [24]),
+    16: get_search_cases("4B", 1536, [24]),
+    32: get_search_cases("6.8B", 1536, [24]),
     64: get_search_cases("13B", 1520, [38]),
 }

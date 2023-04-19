@@ -26,6 +26,7 @@ benchmark_suites = {
     "gpt.perf_test_manual": suite_manual_gpt.perf_test_suite,
     "gpt.perf_test_auto": suite_auto_gpt.perf_test_suite,
     "gpt.grid_search_auto": suite_auto_gpt.grid_search_suite,
+    "gpt.intra_search_auto": suite_auto_gpt.intra_search_suite,
     "gpt.correctness_test_auto": suite_auto_gpt.correctness_test_suite,
     "gpt_inference.profile": suite_inference_gpt.profile_suite,
     "gpt_no_embedding_inference.profile": suite_inference_gpt.profile_suite,
@@ -40,12 +41,14 @@ benchmark_suites = {
     "wresnet.perf_test_2d": suite_wresnet.perf_test_2d_suite,
     "wresnet.perf_test_auto": suite_wresnet.perf_test_auto_suite,
     "wresnet.grid_search_auto": suite_wresnet.grid_search_auto_suite,
+    "wresnet.intra_search_auto": suite_wresnet.intra_search_auto_suite,
 }
 
 
 def benchmark_suite(suite_name,
                     num_hosts,
                     num_devices_per_host,
+                    use_remat,
                     exp_name="default",
                     niter=3,
                     shard_only=False,
@@ -75,6 +78,7 @@ def benchmark_suite(suite_name,
         model_config = benchmark_case.model_config
         num_micro_batches = benchmark_case.num_micro_batches
         parallel_args = benchmark_case.parallel_args
+        parallel_args.use_remat = use_remat
 
         # Run one case
         print("Working on case: {}".format(str(benchmark_case)))
@@ -146,11 +150,13 @@ if __name__ == "__main__":
                         dest="use_separate_process")
     parser.add_argument("--exp-name", type=str, default="default")
     parser.add_argument("--disable-tqdm", action="store_true")
+    parser.add_argument("--use-remat", action="store_true")
     args = parser.parse_args()
 
     num_hosts, num_devices_per_host = get_num_hosts_and_num_devices(args)
 
-    benchmark_suite(args.suite, num_hosts, num_devices_per_host, args.exp_name,
+    benchmark_suite(args.suite, num_hosts, num_devices_per_host,
+                    args.use_remat, args.exp_name,
                     args.niter, args.shard_only, args.local,
                     args.profile_driver_time, args.profile_stage_execution_time,
                     args.disable_tqdm, args.use_separate_process)
