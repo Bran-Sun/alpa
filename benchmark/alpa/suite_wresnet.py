@@ -22,9 +22,6 @@ wresnet_specs = {
     "1B": WResNetModelConfig(224, 50, 320, 2, "fp32"),
     "2B": WResNetModelConfig(224, 50, 448, 2, "fp32"),
     "4B": WResNetModelConfig(224, 50, 640, 2, "fp32"),
-    "4B_2": WResNetModelConfig(224, 4, 320, 16, "fp32"),
-    "4B_4": WResNetModelConfig(224, 8, 320, 16, "fp32"),
-    "4B_8": WResNetModelConfig(224, 50, 320, 16, "fp32"),
     "6.8B": WResNetModelConfig(224, 50, 320, 16, "fp32"),
     "13B": WResNetModelConfig(224, 101, 320, 16, "fp32"),
 }
@@ -163,9 +160,21 @@ perf_test_auto_suite = {
 # Grid search on hyperparameters
 # key = the number of gpus, value = a list of cases
 intra_search_auto_suite = {
-    2: get_search_cases("4B_2", 1536, [24]),
-    4: get_search_cases("4B_4", 1536, [24]),
-    8: get_search_cases("4B_8", 1536, [24]),
+    2: [
+        BenchmarkCase(1536, WResNetModelConfig(224, 4, 640, 2, "fp32"),
+                      24, "2d_shard",
+                      ShardParallelArgs(False, False, (2, 1), False)),
+    ],
+    4: [
+        BenchmarkCase(1536, WResNetModelConfig(224, 8, 640, 2, "fp32"),
+                      24, "2d_shard",
+                      ShardParallelArgs(False, False, (4, 1), False)),
+    ],
+    8: [
+        BenchmarkCase(1536, WResNetModelConfig(224, 50, 640, 2, "fp32"),
+                      24, "2d_shard",
+                      ShardParallelArgs(False, False, (8, 1), False)),
+    ],
 }
 
 grid_search_auto_suite = {

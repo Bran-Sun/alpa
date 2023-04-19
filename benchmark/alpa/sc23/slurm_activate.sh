@@ -1,4 +1,11 @@
-#SBATCH --nodes=2
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --partition=Big
+#SBATCH --gres=gpu:8
+#SBATCH --nodelist=nico1
+
+SLURM_GPUS_PER_TASK=8
 
 # Getting the node names
 nodes=$(scontrol show hostnames "$SLURM_JOB_NODELIST")
@@ -27,7 +34,7 @@ echo "IP Head: $ip_head"
 echo "Starting HEAD at $head_node"
 srun --nodes=1 --ntasks=1 -w "$head_node" \
     ray start --head --node-ip-address="$head_node_ip" --port=$port \
-    --num-cpus "${SLURM_CPUS_PER_TASK}" --num-gpus "${SLURM_GPUS_PER_TASK}" --block &
+    --num-gpus "${SLURM_GPUS_PER_TASK}" --block &
 
 sleep 10
 
@@ -39,7 +46,9 @@ for ((i = 1; i <= worker_num; i++)); do
     echo "Starting WORKER $i at $node_i"
     srun --nodes=1 --ntasks=1 -w "$node_i" \
         ray start --address "$ip_head" \
-        --num-cpus "${SLURM_CPUS_PER_TASK}" --num-gpus "${SLURM_GPUS_PER_TASK}" --block &
+        --num-gpus "${SLURM_GPUS_PER_TASK}" --block &
     sleep 5
 done
 
+num=4
+python3 benchmark.py --suite wresnet.intra_search_auto --num-hosts 1 --num-devices-per-host ${num} --shard-only

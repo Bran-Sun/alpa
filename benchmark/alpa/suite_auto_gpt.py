@@ -1,7 +1,7 @@
 """Benchmark suites for gpt with auto parallelization."""
-from suite_manual_gpt import gpt_specs
+from suite_manual_gpt import GPTModelConfig, gpt_specs
 from benchmark_parallel_utils import (BenchmarkCase, SearchParallelArgs,
-                                      LoadSolutionParallelArgs)
+                                      LoadSolutionParallelArgs, ShardParallelArgs)
 
 max_global_batch_size = 512
 
@@ -91,9 +91,21 @@ grid_search_suite = {
 }
 
 intra_search_suite = {
-    2: get_search_cases(gpt_specs["6.7B_2"], [64], [16]),
-    4: get_search_cases(gpt_specs["6.7B_4"], [64], [16]),
-    8: get_search_cases(gpt_specs["6.7B_8"], [64], [16]),
+    2: [
+        BenchmarkCase(512, GPTModelConfig(1024, 4096, 2, 32, 51200),
+                      64, "2d_shard",
+                      ShardParallelArgs(False, False, (2, 1), False))
+    ],
+    4: [
+        BenchmarkCase(512, GPTModelConfig(1024, 4096, 4, 32, 51200),
+                      64, "2d_shard",
+                      ShardParallelArgs(False, False, (4, 1), False))
+    ],
+    8: [
+        BenchmarkCase(512, GPTModelConfig(1024, 4096, 8, 32, 51200),
+                      64, "2d_shard",
+                      ShardParallelArgs(False, False, (8, 1), False))
+    ],
 }
 
 """

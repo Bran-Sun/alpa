@@ -75,10 +75,13 @@ def benchmark_suite(suite_name,
 
     # Run all cases
     for benchmark_case in suite:
+        parallel_args = benchmark_case.parallel_args
+        new_parallel_args = parallel_args._replace(use_remat=use_remat)
+        benchmark_case = benchmark_case._replace(parallel_args=new_parallel_args)
+
         model_config = benchmark_case.model_config
         num_micro_batches = benchmark_case.num_micro_batches
         parallel_args = benchmark_case.parallel_args
-        parallel_args.use_remat = use_remat
 
         # Run one case
         print("Working on case: {}".format(str(benchmark_case)))
